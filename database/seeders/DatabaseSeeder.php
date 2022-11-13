@@ -27,7 +27,12 @@ class DatabaseSeeder extends Seeder
         //     'email' => 'test@example.com',
         // ]);
 
-        User::factory(10)->create();
+        User::factory()->admin()->create([
+            'username' => 'admin',
+            'email' => 'admin@mail.com'
+        ]);
+
+        User::factory(9)->create();
         Community::factory(15)->seedData()->create();
         Post::factory(30)->seedData()->create();
         
