@@ -14,8 +14,8 @@ return new class extends Migration
     public function up()
     {
         Schema::create('post_votes', function (Blueprint $table) {
-            $table->foreignId('user_id')->constrained()->onDelete('cascase');
-            $table->foreignId('post_id')->constrained()->onDelete('cascase');
+            $table->foreignId('user_id')->constrained()->onDelete('cascade');
+            $table->foreignId('post_id')->constrained()->onDelete('cascade');
             $table->smallInteger('vote');
             $table->timestamps();
         });
