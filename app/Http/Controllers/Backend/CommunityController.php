@@ -7,6 +7,7 @@ use App\Models\Community;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreCommunityRequest;
+use App\Http\Resources\CommunityResource;
 
 class CommunityController extends Controller
 {
@@ -17,7 +18,17 @@ class CommunityController extends Controller
      */
     public function index()
     {
-        return 'ok';
+        $communities = Community::where('user_id', auth()->id())
+            ->paginate(3)
+            ->through(fn ($community) => [
+                'id' => $community->id,
+                'name' => $community->name,
+                'slug' => $community->slug
+            ]);
+
+        return Inertia::render('Communities/Index', [
+            'communities' => $communities
+        ]);
     }
 
     /**

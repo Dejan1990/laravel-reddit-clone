@@ -17,4 +17,9 @@ class Community extends Model
         $this->attributes['name'] = $value;
         $this->attributes['slug'] = Str::slug($value);
     }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
 }
