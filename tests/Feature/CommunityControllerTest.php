@@ -17,7 +17,7 @@ class CommunityControllerTest extends TestCase
     /** @test */
     public function unauthenticateUserCannotVisitIndexPage()
     {
-        $response = $this->get('/communities')
+        $this->get('/communities')
             ->assertRedirect('/login');
     }
 
@@ -28,7 +28,7 @@ class CommunityControllerTest extends TestCase
 
         Sanctum::actingAs($user, ['*']);
 
-        $response = $this->get('/communities')
+        $this->get('/communities')
             ->assertOk();
     }
 
@@ -46,7 +46,6 @@ class CommunityControllerTest extends TestCase
                 fn ($page) => $page
                     ->url('/communities')
                     ->has('communities.data', 3)
-                    ->dump()
             );
     }
 
@@ -99,7 +98,7 @@ class CommunityControllerTest extends TestCase
     /** @test */
     public function unauthenticateUserCannotVisitCreatePage()
     {
-        $response = $this->get('/communities/create')
+        $this->get('/communities/create')
             ->assertRedirect('/login');
     }
 
@@ -110,7 +109,7 @@ class CommunityControllerTest extends TestCase
 
         Sanctum::actingAs($user, ['*']);
 
-        $response = $this->get('/communities/create')
+        $this->get('/communities/create')
             ->assertOk();
     }
 
@@ -140,5 +139,47 @@ class CommunityControllerTest extends TestCase
         $this->assertDatabaseHas('communities', [
             'user_id' => $user->id
         ]);
+    }
+
+    /** @test */
+    public function unauthenticateUserCannotVisitEditPage()
+    {
+        $community = Community::factory()->create();
+
+        $this->get(route('communities.edit', $community->id))
+            ->assertRedirect('/login');
+    }
+
+    /** @test */
+    public function authenticateUserCannotVisitEditPageIfCommunityDoesNotBelongToHim()
+    {
+        $user = User::factory()->create();
+        $user2 = User::factory()->create();
+        $community = Community::factory()->for($user)->create();
+
+        Sanctum::actingAs($user2, ['*']);
+
+        $this->get(route('communities.edit', $community->id))
+            ->assertForbidden();
+    }
+
+    /** @test */
+    public function authenticateUserCanVisitEditPageIfCommunityBelongsToHim()
+    {
+        $user = User::factory()->create();
+        $community = Community::factory()->for($user)->create();
+
+        Sanctum::actingAs($user, ['*']);
+
+        $this->get(route('communities.edit', $community->id))
+            ->assertOk()
+            ->assertInertia(fn ($page) => $page
+                ->whereAll([
+                    'community.user_id' => $user->id, 
+                    'community.id' => $community->id,
+                    'community.name' => $community->name,
+                    'community.description' => $community->description
+                ])
+        );
     }
 }

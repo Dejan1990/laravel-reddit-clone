@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreCommunityRequest;
 use App\Http\Resources\CommunityResource;
+use Illuminate\Http\Response;
 
 class CommunityController extends Controller
 {
@@ -73,7 +74,11 @@ class CommunityController extends Controller
      */
     public function edit(Community $community)
     {
-        //
+        $this->authorize('update', $community);
+
+        return Inertia::render('Communities/Edit', [
+            'community' => $community
+        ]);
     }
 
     /**

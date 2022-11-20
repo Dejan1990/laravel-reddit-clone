@@ -53,12 +53,12 @@
                                                 <td 
                                                     class="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6"
                                                 >
-                                                    <a 
-                                                        href="#" 
+                                                    <Link
+                                                        :href="route('communities.edit', community.id)"
                                                         class="text-indigo-600 hover:text-indigo-900"
                                                     >
                                                         Edit
-                                                    </a>
+                                                    </Link>
                                                 </td>
                                             </tr>
                                         </tbody>
