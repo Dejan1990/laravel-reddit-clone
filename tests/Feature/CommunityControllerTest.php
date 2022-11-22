@@ -246,4 +246,43 @@ class CommunityControllerTest extends TestCase
             'description' => 'Updated description'
         ]);
     }
+
+    /** @test */
+    public function unauthenticateUserCannotDeleteCommynity()
+    {
+        $community = Community::factory()->create();
+
+        $this->delete(route('communities.destroy', $community->id))
+            ->assertRedirect('/login');
+    }
+
+    /** @test */
+    public function authenticateUserCannotDeleteCommunityIfDoesNotBelongToHim()
+    {
+        $user = User::factory()->create();
+        $user2 = User::factory()->create();
+
+        $community = Community::factory()->for($user)->create();
+
+        Sanctum::actingAs($user2, ['*']);
+
+        $this->delete(route('communities.destroy', $community->id))
+            ->assertForbidden();
+
+        $this->assertModelExists($community);
+    }
+
+    /** @test */
+    public function authenticateUserCanDeleteCommunityIfBelongsToHim()
+    {
+        $user = User::factory()->create();
+        $community = Community::factory()->for($user)->create();
+
+        Sanctum::actingAs($user, ['*']);
+
+        $this->delete(route('communities.destroy', $community->id))
+            ->assertRedirect();
+
+        $this->assertModelMissing($community);
+    }
 }

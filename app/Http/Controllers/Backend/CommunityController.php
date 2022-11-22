@@ -105,6 +105,10 @@ class CommunityController extends Controller
      */
     public function destroy(Community $community)
     {
-        //
+        $this->authorize('delete', $community);
+
+        $community->delete();
+
+        return to_route('communities.index');
     }
 }
