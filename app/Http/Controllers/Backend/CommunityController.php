@@ -88,9 +88,13 @@ class CommunityController extends Controller
      * @param  \App\Models\Community  $community
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Community $community)
+    public function update(StoreCommunityRequest $request, Community $community)
     {
-        //
+        $this->authorize('update', $community);
+
+        $community->update($request->validated());
+
+        return to_route('communities.index');
     }
 
     /**

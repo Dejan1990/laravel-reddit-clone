@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Models\Comment;
 use Tests\TestCase;
 use App\Models\User;
 use App\Models\Community;
@@ -181,5 +182,68 @@ class CommunityControllerTest extends TestCase
                     'community.description' => $community->description
                 ])
         );
+    }
+
+    /** @test */
+    public function unauthenticateUserCannotUpdateCommunity()
+    {
+        $community = Community::factory()->create();
+
+        $this->put('/communities/' . $community->id, Community::factory()->raw())
+            ->assertRedirect('/login');
+    }
+
+    /** @test */
+    public function authenticateUserCannotUpdateCommunityIfDoesNotBelongToHim()
+    {
+        $user = User::factory()->create();
+        $user2 = User::factory()->create();
+
+        $community = Community::factory()->for($user)->create();
+
+        Sanctum::actingAs($user2, ['*']);
+
+        $this->put('/communities/' . $community->id, Community::factory()->raw())
+            ->assertForbidden();
+
+        $this->assertDatabaseHas('communities', [
+            'name' => $community->name,
+            'description' => $community->description
+        ]);
+    }
+
+    /** @test */
+    public function validationWorksForCommunityUpdate()
+    {
+        $user = User::factory()->create();
+
+        $community = Community::factory()->for($user)->create();
+
+        Sanctum::actingAs($user, ['*']);
+
+        $this->put('/communities/' . $community->id, [])
+            ->assertSessionHasErrors('name', 'description');
+    }
+
+    /** @test */
+    public function authenticateUserCanUpdateCommunityIfBelongsToHim()
+    {   
+        $user = User::factory()->create();
+
+        $community = Community::factory()->for($user)->create();
+
+        Sanctum::actingAs($user, ['*']);
+
+        $this->put('/communities/' . $community->id, [
+            'name' => 'Updated name',
+            'description' => 'Updated description'
+        ])
+        ->assertSessionDoesntHaveErrors()
+        ->assertRedirect(route('communities.index'));
+        
+        $this->assertDatabaseHas('communities', [
+            'name' => 'Updated name',
+            'description' => 'Updated description'
+        ]);
     }
 }
