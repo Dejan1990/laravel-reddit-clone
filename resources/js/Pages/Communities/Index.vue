@@ -63,6 +63,9 @@
                                             </tr>
                                         </tbody>
                                     </table>
+                                    <div class="m-2 p-2">
+                                        <Pagination :links="communities.links" />
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -76,6 +79,7 @@
 <script setup>
 import { Head, Link } from '@inertiajs/inertia-vue3'
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue'
+import Pagination from '@/Components/Pagination.vue'
 
 defineProps({
     communities: Object
