@@ -23,6 +23,11 @@ class Community extends Model
         return $this->belongsTo(User::class);
     }
 
+    public function getRouteKeyName()
+    {
+        return 'slug';
+    }
+
     public function posts()
     {
         return $this->hasMany(Post::class);
