@@ -147,7 +147,7 @@ class CommunityControllerTest extends TestCase
     {
         $community = Community::factory()->create();
 
-        $this->get(route('communities.edit', $community->id))
+        $this->get(route('communities.edit', $community->slug))
             ->assertRedirect('/login');
     }
 
@@ -160,7 +160,7 @@ class CommunityControllerTest extends TestCase
 
         Sanctum::actingAs($user2, ['*']);
 
-        $this->get(route('communities.edit', $community->id))
+        $this->get(route('communities.edit', $community->slug))
             ->assertForbidden();
     }
 
@@ -172,7 +172,7 @@ class CommunityControllerTest extends TestCase
 
         Sanctum::actingAs($user, ['*']);
 
-        $this->get(route('communities.edit', $community->id))
+        $this->get(route('communities.edit', $community->slug))
             ->assertOk()
             ->assertInertia(fn ($page) => $page
                 ->whereAll([
@@ -189,7 +189,7 @@ class CommunityControllerTest extends TestCase
     {
         $community = Community::factory()->create();
 
-        $this->put('/communities/' . $community->id, Community::factory()->raw())
+        $this->put('/communities/' . $community->slug, Community::factory()->raw())
             ->assertRedirect('/login');
     }
 
@@ -203,7 +203,7 @@ class CommunityControllerTest extends TestCase
 
         Sanctum::actingAs($user2, ['*']);
 
-        $this->put('/communities/' . $community->id, Community::factory()->raw())
+        $this->put('/communities/' . $community->slug, Community::factory()->raw())
             ->assertForbidden();
 
         $this->assertDatabaseHas('communities', [
@@ -221,7 +221,7 @@ class CommunityControllerTest extends TestCase
 
         Sanctum::actingAs($user, ['*']);
 
-        $this->put('/communities/' . $community->id, [])
+        $this->put('/communities/' . $community->slug, [])
             ->assertSessionHasErrors('name', 'description');
     }
 
@@ -234,7 +234,7 @@ class CommunityControllerTest extends TestCase
 
         Sanctum::actingAs($user, ['*']);
 
-        $this->put('/communities/' . $community->id, [
+        $this->put('/communities/' . $community->slug, [
             'name' => 'Updated name',
             'description' => 'Updated description'
         ])
@@ -252,7 +252,7 @@ class CommunityControllerTest extends TestCase
     {
         $community = Community::factory()->create();
 
-        $this->delete(route('communities.destroy', $community->id))
+        $this->delete(route('communities.destroy', $community->slug))
             ->assertRedirect('/login');
     }
 
@@ -266,7 +266,7 @@ class CommunityControllerTest extends TestCase
 
         Sanctum::actingAs($user2, ['*']);
 
-        $this->delete(route('communities.destroy', $community->id))
+        $this->delete(route('communities.destroy', $community->slug))
             ->assertForbidden();
 
         $this->assertModelExists($community);
@@ -280,7 +280,7 @@ class CommunityControllerTest extends TestCase
 
         Sanctum::actingAs($user, ['*']);
 
-        $this->delete(route('communities.destroy', $community->id))
+        $this->delete(route('communities.destroy', $community->slug))
             ->assertRedirect();
 
         $this->assertModelMissing($community);
