@@ -23,7 +23,7 @@
                             />
                             <Error :message="form.errors.title" class="mt-2" />
                         </div>
-                        <div>
+                        <div class="mt-4">
                             <Label for="url" value="Url" />
                             <Input 
                                 type="text"
@@ -68,7 +68,7 @@ import Input from '@/Components/TextInput.vue'
 import Error from '@/Components/InputError.vue'
 import Button from '@/Components/PrimaryButton.vue'
 
-defineProps({
+const props = defineProps({
     community: Object
 })
 
@@ -77,4 +77,8 @@ const form = useForm({
     url: '',
     description: ''
 })
+
+const store = () => {
+    form.post(route('communities.posts.store', props.community.slug))
+}
 </script>

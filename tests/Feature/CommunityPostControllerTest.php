@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Models\Community;
+use App\Models\Post;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
@@ -18,7 +19,7 @@ class CommunityPostControllerTest extends TestCase
     {
         $community = Community::factory()->create();
 
-        $this->get(route('communities.posts.create', $community->id))
+        $this->get(route('communities.posts.create', $community->slug))
             ->assertRedirect('/login');
     }
 
@@ -30,7 +31,7 @@ class CommunityPostControllerTest extends TestCase
 
         Sanctum::actingAs($user, ['*']);
 
-        $this->get('/communities/'.$community->id.'/posts/create')
+        $this->get(route('communities.posts.create', $community->slug))
             ->assertOk()
             ->assertInertia(fn ($page) => $page
                 ->whereAll([
@@ -41,5 +42,49 @@ class CommunityPostControllerTest extends TestCase
                     'community.user_id' => $community->user->id
                 ])
         );
+    }
+
+    /** @test */
+    public function unauthenticateUserCannotCreatePost()
+    {
+        $community = Community::factory()->create();
+
+        $this->post(route('communities.posts.store', $community->slug), Post::factory()->raw())
+            ->assertRedirect('/login');
+
+        $this->assertDatabaseCount('posts', 0);
+    }
+
+    /** @test */
+    public function validationWorksForPostCreate()
+    {
+        $user = User::factory()->create();
+        $community = Community::factory()->create();
+
+        Sanctum::actingAs($user, ['*']);
+
+        $this->post(route('communities.posts.store', $community->slug), [])
+            ->assertSessionHasErrors(['title', 'description']);
+
+        $this->assertDatabaseCount('posts', 0);
+    }
+
+    /** @test */
+    public function authenticateUserCanCreatePost()
+    {
+        $user = User::factory()->create();
+        $community = Community::factory()->create();
+
+        Sanctum::actingAs($user, ['*']);
+
+        $this->post(route('communities.posts.store', $community->slug), Post::factory()->raw())
+            ->assertRedirect(route('frontend.community.show', $community->slug))
+            ->assertSessionDoesntHaveErrors();
+
+        $this->assertDatabaseCount('posts', 1);
+        $this->assertDatabaseHas('posts', [
+            'user_id' => $user->id,
+            'community_id' => $community->id
+        ]);
     }
 }
