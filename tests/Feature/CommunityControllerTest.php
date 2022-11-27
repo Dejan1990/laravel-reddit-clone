@@ -45,13 +45,12 @@ class CommunityControllerTest extends TestCase
             ->assertOk()
             ->assertInertia(
                 fn ($page) => $page
-                    ->url('/communities')
                     ->has('communities.data', 3)
             );
     }
 
     /** @test */
-    public function itListsOnlyCommunitiesInfoThatWeExpectedOnIndexPage()
+    public function itListsOnlyCommunitiesInfoThatWeExpectOnIndexPage()
     {
         $user = User::factory()->create();
         Community::factory(10)->for($user)->create();
@@ -62,7 +61,6 @@ class CommunityControllerTest extends TestCase
             ->assertOk()
             ->assertInertia(
                 fn ($page) => $page
-                    ->url('/communities')
                     ->has('communities.data', 3)
                     ->hasAll([
                         'communities.data.0' => 3,
@@ -115,15 +113,23 @@ class CommunityControllerTest extends TestCase
     }
 
     /** @test */
+    public function unauthenticateUserCannotCreateCommunity()
+    {
+        $this->post('/communities', [])
+            ->assertRedirect('/login');
+
+        $this->assertDatabaseCount('communities', 0);
+    }
+
+    /** @test */
     public function validationWorksForCommunityStore()
     {
         $user = User::factory()->create();
 
         Sanctum::actingAs($user, ['*']);
 
-        $response = $this->post('/communities', []);
-
-        $response->assertSessionHasErrors(['name', 'description']);
+        $this->post('/communities', [])
+            ->assertSessionHasErrors(['name', 'description']);
     }
 
     /** @test */
@@ -133,9 +139,9 @@ class CommunityControllerTest extends TestCase
 
         Sanctum::actingAs($user, ['*']);
 
-        $response = $this->post('/communities', Community::factory()->raw());
+        $this->post('/communities', Community::factory()->raw())
+            ->assertRedirect('/communities');
 
-        $response->assertRedirect('/communities');
         $this->assertDatabaseCount('communities', 1);
         $this->assertDatabaseHas('communities', [
             'user_id' => $user->id
@@ -191,6 +197,11 @@ class CommunityControllerTest extends TestCase
 
         $this->put('/communities/' . $community->slug, Community::factory()->raw())
             ->assertRedirect('/login');
+
+        $this->assertDatabaseHas('communities', [
+            'name' => $community->name,
+            'description' => $community->description
+        ]);
     }
 
     /** @test */
