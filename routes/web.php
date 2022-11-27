@@ -28,9 +28,9 @@ Route::get('/', function () {
     ]);
 });
 
-Route::get('/r/{slug}', [FrontendCommunityController::class, 'show'])
+Route::get('/r/{community:slug}', [FrontendCommunityController::class, 'show'])
     ->name('frontend.community.show');
-Route::get('/r/{community_slug}/posts/{post:slug}', [PostController::class, 'show'])
+Route::get('/r/{community:slug}/posts/{post:slug}', [PostController::class, 'show'])
     ->name('frontend.communities.posts.show');
 
 Route::group(['middleware' => ['auth', 'verified']], function () {

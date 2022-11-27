@@ -10,14 +10,11 @@ use App\Http\Resources\CommunityPostResource;
 
 class CommunityController extends Controller
 {
-    public function show($slug)
+    public function show(Community $community)
     {
-        $community = Community::where('slug', $slug)->first();
-        $posts = CommunityPostResource::collection($community->posts()->with('user')->paginate(3));
-
         return Inertia::render('Frontend/Communities/Show', [
             'community' => $community,
-            'posts' => $posts
+            'posts' => CommunityPostResource::collection($community->posts()->with('user')->paginate(3))
         ]);
     }
 }

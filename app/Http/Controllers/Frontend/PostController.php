@@ -10,11 +10,8 @@ use Inertia\Inertia;
 
 class PostController extends Controller
 {
-    public function show($community_slug, $slug)
+    public function show(Community $community, Post $post)
     {
-        $community = Community::where('slug', $community_slug)->first();
-        $post = Post::where('slug', $slug)->first();
-
         return Inertia::render('Frontend/Posts/Show', [
             'community' => $community,
             'post' => $post

@@ -16,7 +16,7 @@ class FrontendPostControllerTest extends TestCase
     public function unauthenticateUserCanVisitfrontendPostShowPage()
     {
         $community = Community::factory()->create();
-        $post = Post::factory()->create();
+        $post = Post::factory()->for($community)->create();
 
         $this->get(route('frontend.communities.posts.show', [$community->slug, $post->slug]))
             ->assertOk();
