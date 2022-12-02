@@ -87,4 +87,27 @@ class CommunityPostControllerTest extends TestCase
             'community_id' => $community->id
         ]);
     }
+
+    /** @test */
+    public function unauthenticateUserCannotVisitEditPostPage()
+    {
+        $community = Community::factory()->create();
+        $post = Post::factory()->create();
+
+        $this->get(route('communities.posts.edit', [$community, $post]))
+            ->assertRedirect('/login');
+    }
+
+    /** @test */
+    public function authenticateUserCanVisitEditPostPage()
+    {
+        $user = User::factory()->create();
+        $community = Community::factory()->create();
+        $post = Post::factory()->create();
+
+        Sanctum::actingAs($user, ['*']);
+
+        $this->get(route('communities.posts.edit', [$community, $post]))
+            ->assertOk();
+    }
 }

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Backend;
 
+use App\Models\Post;
 use Inertia\Inertia;
 use App\Models\Community;
 use Illuminate\Http\Request;
@@ -23,5 +24,13 @@ class CommunityPostController extends Controller
 
         return to_route('frontend.community.show', $community->slug)
             ->with('message', 'Post created successfully');
+    }
+
+    public function edit(Community $community, Post $post)
+    {
+        return Inertia::render('Communities/Post/Edit', [
+            'community' => $community,
+            'post' => $post
+        ]);
     }
 }
