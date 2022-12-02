@@ -2,11 +2,13 @@
 
 namespace Tests\Feature;
 
-use App\Models\Community;
-use App\Models\Post;
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
+use App\Models\Post;
+use App\Models\User;
+use App\Models\Community;
+use Illuminate\Foundation\Testing\WithFaker;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Laravel\Sanctum\Sanctum;
 
 class FrontendPostControllerTest extends TestCase
 {
@@ -50,7 +52,8 @@ class FrontendPostControllerTest extends TestCase
                     'post.data.title' => $post->title,
                     'post.data.url' => $post->url,
                     'post.data.description' => $post->description,
-                    'post.data.username' => $post->user->username
+                    'post.data.username' => $post->user->username,
+                    'post.data.owner' => false
                 ])
                 ->missing('community_id')
         );
