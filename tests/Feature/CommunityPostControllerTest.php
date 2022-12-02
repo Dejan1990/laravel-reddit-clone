@@ -155,4 +155,31 @@ class CommunityPostControllerTest extends TestCase
             'description' => $updatePost['description']
         ]);
     }
+
+    /** @test */
+    public function unauthenticateUserCannotDeletePost()
+    {
+        $community = Community::factory()->create();
+        $post = Post::factory()->create();
+
+        $this->delete(route('communities.posts.destroy', [$community, $post]))
+            ->assertRedirect('/login');
+
+        $this->assertModelExists($post);
+    }
+
+    /** @test */
+    public function authenticateUserCanDeletePost()
+    {
+        $user = User::factory()->create();
+        $community = Community::factory()->create();
+        $post = Post::factory()->for($community)->create();
+
+        Sanctum::actingAs($user, ['*']);
+
+        $this->delete(route('communities.posts.destroy', [$community, $post]))
+            ->assertRedirect(route('frontend.community.show', $community->slug));
+
+        $this->assertSoftDeleted($post);
+    }
 }

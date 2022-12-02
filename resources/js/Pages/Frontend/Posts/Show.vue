@@ -23,8 +23,11 @@
                 Edit
               </Link>
               <Link
-                :href="route('communities.posts.edit', [community.slug, post.data.slug])"
-                class="font-semibold text-red-500 hover:text-red-700 ml-2"
+                :href="route('communities.posts.destroy', [community.slug, post.data.slug])"
+                class="font-semibold bg-red-500 hover:bg-red-700 rounded-md text-white px-4 py-2"
+                method="delete"
+                as="button"
+                type="button"
               >
                 Delete
               </Link>

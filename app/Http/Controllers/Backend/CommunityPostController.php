@@ -41,4 +41,12 @@ class CommunityPostController extends Controller
         return to_route('frontend.communities.posts.show', [$community->slug, $post->slug])
             ->with('message', 'Post updated successfully');
     }
+
+    public function destroy(Community $community, Post $post)
+    {
+        $post->delete();
+
+        return to_route('frontend.community.show', $community->slug)
+            ->with('message', 'Post deleted successfully');
+    }
 }
