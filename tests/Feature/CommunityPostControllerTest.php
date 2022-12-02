@@ -110,4 +110,49 @@ class CommunityPostControllerTest extends TestCase
         $this->get(route('communities.posts.edit', [$community, $post]))
             ->assertOk();
     }
+
+    /** @test */
+    public function unauthenticateUserCannotUpdatePost()
+    {
+        $community = Community::factory()->create();
+        $post = Post::factory()->create();
+
+        $this->put(route('communities.posts.update', [$community, $post]), Post::factory()->raw())
+            ->assertRedirect('/login');
+
+        $this->assertDatabaseHas('posts', [
+            'title' => $post->title
+        ]);
+    }
+
+    /** @test */
+    public function validationWorksForPostUpdate()
+    {
+        $user = User::factory()->create();
+        $community = Community::factory()->create();
+        $post = Post::factory()->create();
+
+        Sanctum::actingAs($user, ['*']);
+
+        $this->put(route('communities.posts.update', [$community, $post]), [])
+            ->assertSessionHasErrors('title', 'description');
+    }
+
+    /** @test */
+    public function authenticateUserCanUpdatePost()
+    {
+        $user = User::factory()->create();
+        $community = Community::factory()->create();
+        $post = Post::factory()->create();
+
+        Sanctum::actingAs($user, ['*']);
+
+        $this->put(route('communities.posts.update', [$community, $post]), $updatePost = Post::factory()->raw())
+            ->assertSessionDoesntHaveErrors();
+
+        $this->assertDatabaseHas('posts', [
+            'title' => $updatePost['title'],
+            'description' => $updatePost['description']
+        ]);
+    }
 }

@@ -11,7 +11,7 @@
     <div class="py-12">
       <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
         <div class="max-w-md mx-auto bg-white m-2 p-6">
-          <form @submit.prevent="submit">
+          <form @submit.prevent="update">
             <div>
               <Label for="title" value="Title" />
               <Input
@@ -82,4 +82,11 @@ const form = useForm({
     description: props.post?.description,
     url: props.post?.url,
 })
+
+const update = () => {
+    form.put(route('communities.posts.update', [
+        props.community.slug, 
+        props.post.slug
+    ]))
+}
 </script>

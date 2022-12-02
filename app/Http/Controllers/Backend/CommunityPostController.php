@@ -33,4 +33,12 @@ class CommunityPostController extends Controller
             'post' => $post
         ]);
     }
+
+    public function update(StorePostRequest $request, Community $community, Post $post)
+    {
+        $post->update($request->validated());
+
+        return to_route('frontend.communities.posts.show', [$community->slug, $post->slug])
+            ->with('message', 'Post updated successfully');
+    }
 }
