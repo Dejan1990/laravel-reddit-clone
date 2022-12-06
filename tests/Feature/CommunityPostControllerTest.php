@@ -99,11 +99,24 @@ class CommunityPostControllerTest extends TestCase
     }
 
     /** @test */
-    public function authenticateUserCanVisitEditPostPage()
+    public function authenticateUserCannotVisitEditPostPageIfPostDoesNotBelongToHim()
     {
         $user = User::factory()->create();
         $community = Community::factory()->create();
         $post = Post::factory()->create();
+
+        Sanctum::actingAs($user, ['*']);
+
+        $this->get(route('communities.posts.edit', [$community, $post]))
+            ->assertForbidden();
+    }
+
+    /** @test */
+    public function authenticateUserCanVisitEditPostPageIfPostDoesBelongToHim()
+    {
+        $user = User::factory()->create();
+        $community = Community::factory()->create();
+        $post = Post::factory()->for($user)->create();
 
         Sanctum::actingAs($user, ['*']);
 
@@ -139,11 +152,24 @@ class CommunityPostControllerTest extends TestCase
     }
 
     /** @test */
-    public function authenticateUserCanUpdatePost()
+    public function authenticateUserCannotUpdatePostIfDoesNotBelongToHim()
     {
         $user = User::factory()->create();
         $community = Community::factory()->create();
         $post = Post::factory()->create();
+
+        Sanctum::actingAs($user, ['*']);
+
+        $this->put(route('communities.posts.update', [$community, $post]), Post::factory()->raw())
+            ->assertForbidden();
+    }
+
+    /** @test */
+    public function authenticateUserCanUpdatePostIfDoesBelongToHim()
+    {
+        $user = User::factory()->create();
+        $community = Community::factory()->create();
+        $post = Post::factory()->for($user)->create();
 
         Sanctum::actingAs($user, ['*']);
 
@@ -165,15 +191,30 @@ class CommunityPostControllerTest extends TestCase
         $this->delete(route('communities.posts.destroy', [$community, $post]))
             ->assertRedirect('/login');
 
-        $this->assertModelExists($post);
+        $this->assertNotSoftDeleted($post);
     }
 
     /** @test */
-    public function authenticateUserCanDeletePost()
+    public function authenticateUserCannotDeletePostIfDoesNotBelongToHim()
     {
         $user = User::factory()->create();
         $community = Community::factory()->create();
         $post = Post::factory()->for($community)->create();
+
+        Sanctum::actingAs($user, ['*']);
+
+        $this->delete(route('communities.posts.destroy', [$community, $post]))
+            ->assertForbidden();
+
+        $this->assertNotSoftDeleted($post);
+    }
+
+    /** @test */
+    public function authenticateUserCanDeletePostIfDoesBelongToHim()
+    {
+        $user = User::factory()->create();
+        $community = Community::factory()->create();
+        $post = Post::factory()->for($community)->for($user)->create();
 
         Sanctum::actingAs($user, ['*']);
 
