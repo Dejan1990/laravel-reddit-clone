@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Models\Comment;
 use Tests\TestCase;
 use App\Models\Post;
 use App\Models\User;
@@ -27,6 +28,7 @@ class FrontendPostControllerTest extends TestCase
     /** @test */
     public function frontendPostShowsProperly()
     {
+        $this->withoutExceptionHandling();
         $community = Community::factory()->create();
         $post = Post::factory()->for($community)->create();
 
@@ -56,6 +58,25 @@ class FrontendPostControllerTest extends TestCase
                     'post.data.owner' => false
                 ])
                 ->missing('community_id')
+        );
+    }
+
+    /** @test */
+    public function itListsCommentsWithExpectedInfoIfTheyExist()
+    {
+        $community = Community::factory()->create();
+        $post = Post::factory()->for($community)->hasComments(2)->create();
+
+        $this->get(route('frontend.communities.posts.show', [$community->slug, $post->slug]))
+            ->assertOk()
+            ->assertInertia(fn ($page) => $page
+                ->hasAll([
+                    'post.data.comments' => 2,
+                    'post.data.comments.0.username',
+                    'post.data.comments.0.content',
+                    'post.data.comments.1.username',
+                    'post.data.comments.1.content'
+                ])
         );
     }
 }

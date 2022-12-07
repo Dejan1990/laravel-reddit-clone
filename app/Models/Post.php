@@ -13,6 +13,8 @@ class Post extends Model
 
     protected $fillable = ['user_id', 'community_id', 'title', 'slug', 'url', 'description'];
 
+    protected $with = ['comments'];
+
     public function setTitleAttribute($value)
     {
         $this->attributes['title'] = $value;
@@ -32,5 +34,10 @@ class Post extends Model
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function comments()
+    {
+        return $this->hasMany(Comment::class);
     }
 }
