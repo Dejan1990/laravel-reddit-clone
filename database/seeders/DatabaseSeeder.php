@@ -43,7 +43,7 @@ class DatabaseSeeder extends Seeder
         }
 
         // Generate unique votes. Ensure idea_id and user_id are unique for each row
-        foreach (range(1, 10) as $user_id) {
+        /*foreach (range(1, 10) as $user_id) {
             foreach (range(1, 30) as $post_id) {
                 if ($post_id % 2 === 0) { // ovo radimo da ne bi svaki user glasao za svaku ideju
                     PostVote::factory()->create([
@@ -52,6 +52,6 @@ class DatabaseSeeder extends Seeder
                     ]);
                 }
             }
-        }
+        }*/
     }
 }

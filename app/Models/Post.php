@@ -11,7 +11,7 @@ class Post extends Model
 {
     use HasFactory, SoftDeletes;
 
-    protected $fillable = ['user_id', 'community_id', 'title', 'slug', 'url', 'description'];
+    protected $fillable = ['user_id', 'community_id', 'title', 'slug', 'url', 'description', 'votes'];
 
     protected $with = ['comments'];
 
