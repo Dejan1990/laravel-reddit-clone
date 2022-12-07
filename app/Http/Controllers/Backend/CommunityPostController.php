@@ -22,7 +22,7 @@ class CommunityPostController extends Controller
     {
         $community->posts()->create($request->validated() + ['user_id' => auth()->id()]);
 
-        return to_route('frontend.community.show', $community->slug)
+        return to_route('frontend.communities.show', $community->slug)
             ->with('message', 'Post created successfully');
     }
 
@@ -52,7 +52,7 @@ class CommunityPostController extends Controller
 
         $post->delete();
 
-        return to_route('frontend.community.show', $community->slug)
+        return to_route('frontend.communities.show', $community->slug)
             ->with('message', 'Post deleted successfully');
     }
 }

@@ -78,7 +78,7 @@ class CommunityPostControllerTest extends TestCase
         Sanctum::actingAs($user, ['*']);
 
         $this->post(route('communities.posts.store', $community->slug), Post::factory()->raw())
-            ->assertRedirect(route('frontend.community.show', $community->slug))
+            ->assertRedirect(route('frontend.communities.show', $community->slug))
             ->assertSessionDoesntHaveErrors();
 
         $this->assertDatabaseCount('posts', 1);
@@ -219,7 +219,7 @@ class CommunityPostControllerTest extends TestCase
         Sanctum::actingAs($user, ['*']);
 
         $this->delete(route('communities.posts.destroy', [$community, $post]))
-            ->assertRedirect(route('frontend.community.show', $community->slug));
+            ->assertRedirect(route('frontend.communities.show', $community->slug));
 
         $this->assertSoftDeleted($post);
     }

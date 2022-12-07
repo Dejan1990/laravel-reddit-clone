@@ -4,7 +4,7 @@
       <div class="w-full md:w-8/12">
         <div class="m-2 p-2 bg-white">
           <h2 class="font-semibold text-2xl text-black">
-            <Link :href="route('frontend.community.show', community.slug)">
+            <Link :href="route('frontend.communities.show', community.slug)">
               r/{{ community.name }}
             </Link>
           </h2>
