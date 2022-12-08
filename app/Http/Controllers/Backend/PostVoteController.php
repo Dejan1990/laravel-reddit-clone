@@ -20,9 +20,9 @@ class PostVoteController extends Controller
             if ($isVoted->vote === -1) {
                 $isVoted->update(['vote' => 1]);
                 $post->increment('votes', 2);
-                return back();
+                return back()->with('message', 'You voted successfully');
             } elseif ($isVoted->vote === 1) {
-                return back();
+                return back()->with('error_message', 'You cannot vote twice for the same post');
             }
         } else {
             PostVote::create([
@@ -32,7 +32,7 @@ class PostVoteController extends Controller
             ]);
 
             $post->increment('votes', 1);
-            return back();
+            return back()->with('message', 'You voted successfully');
         }
     }
 
@@ -47,9 +47,9 @@ class PostVoteController extends Controller
             if ($isVoted->vote === 1) {
                 $isVoted->update(['vote' => -1]);
                 $post->decrement('votes', 2);
-                return back();
+                return back()->with('message', 'You voted successfully');
             } elseif ($isVoted->vote === -1) {
-                return back();
+                return back()->with('error_message', 'You cannot vote twice for the same post');
             }
         } else {
             PostVote::create([
@@ -59,7 +59,7 @@ class PostVoteController extends Controller
             ]);
 
             $post->decrement('votes', 1);
-            return back();
+            return back()->with('message', 'You voted successfully');
         }
     }
 }
