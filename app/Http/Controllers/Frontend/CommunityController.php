@@ -14,7 +14,12 @@ class CommunityController extends Controller
     {
         return Inertia::render('Frontend/Communities/Show', [
             'community' => $community,
-            'posts' => CommunityPostResource::collection($community->posts()->with(['user'])->paginate(3))
+            'posts' => CommunityPostResource::collection($community->posts()
+                ->with([
+                    'user', 
+                    'postVotes' => fn ($query) => $query->where('user_id', auth()->id())
+                ])
+                ->paginate(3))
         ]);
     }
 }
