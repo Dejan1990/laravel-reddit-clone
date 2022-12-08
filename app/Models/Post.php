@@ -13,7 +13,7 @@ class Post extends Model
 
     protected $fillable = ['user_id', 'community_id', 'title', 'slug', 'url', 'description', 'votes'];
 
-    protected $with = ['comments'];
+    protected $with = ['comments', 'postVotes'];
 
     public function setTitleAttribute($value)
     {
@@ -43,6 +43,7 @@ class Post extends Model
 
     public function postVotes()
     {
-        return $this->hasMany(PostVote::class);
+        return $this->hasMany(PostVote::class)
+            ->where('user_id', auth()->id());
     }
 }
