@@ -163,4 +163,78 @@ class PostVoteControllerTest extends TestCase
             'votes' => -1
         ]);
     }
+
+    /** @test */
+    public function userCanChangeUpVoteToDownVoteForSamePost()
+    {
+        $user = User::factory()->create();
+        $post = Post::factory()->create();
+
+        Sanctum::actingAs($user, ['*']);
+
+        $this->post(route('posts.upVote', $post->slug), ['vote' => 1])
+            ->assertRedirect();
+
+        $this->assertDatabaseHas('post_votes', [
+            'post_id' => $post->id,
+            'user_id' => $user->id,
+            'vote' => 1
+        ]);
+
+        $this->assertDatabaseHas('posts', [
+            'id' => $post->id,
+            'votes' => 1
+        ]);
+
+        $this->post(route('posts.downVote', $post->slug), ['vote' => -1])
+            ->assertRedirect();
+
+        $this->assertDatabaseHas('post_votes', [
+            'post_id' => $post->id,
+            'user_id' => $user->id,
+            'vote' => -1
+        ]);
+    
+        $this->assertDatabaseHas('posts', [
+            'id' => $post->id,
+            'votes' => -1
+        ]);
+    }
+
+    /** @test */
+    public function userCanChangeDownVoteToUpVoteForSamePost()
+    {
+        $user = User::factory()->create();
+        $post = Post::factory()->create();
+
+        Sanctum::actingAs($user, ['*']);
+
+        $this->post(route('posts.downVote', $post->slug), ['vote' => -1])
+            ->assertRedirect();
+
+        $this->assertDatabaseHas('post_votes', [
+            'post_id' => $post->id,
+            'user_id' => $user->id,
+            'vote' => -1
+        ]);
+
+        $this->assertDatabaseHas('posts', [
+            'id' => $post->id,
+            'votes' => -1
+        ]);
+
+        $this->post(route('posts.upVote', $post->slug), ['vote' => 1])
+            ->assertRedirect();
+
+        $this->assertDatabaseHas('post_votes', [
+            'post_id' => $post->id,
+            'user_id' => $user->id,
+            'vote' => 1
+        ]);
+    
+        $this->assertDatabaseHas('posts', [
+            'id' => $post->id,
+            'votes' => 1
+        ]);
+    }
 }
