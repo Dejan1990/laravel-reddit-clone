@@ -19,7 +19,9 @@ class CommunityController extends Controller
                     'user', 
                     'postVotes' => fn ($query) => $query->where('user_id', auth()->id())
                 ])
-                ->paginate(3))
+                ->withCount('comments')
+                ->paginate(3)
+            )
         ]);
     }
 }

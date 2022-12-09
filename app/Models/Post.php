@@ -13,7 +13,7 @@ class Post extends Model
 
     protected $fillable = ['user_id', 'community_id', 'title', 'slug', 'url', 'description', 'votes'];
 
-    protected $with = ['comments', 'postVotes'];
+    protected $with = ['comments', 'postVotes', 'community'];
 
     public function setTitleAttribute($value)
     {

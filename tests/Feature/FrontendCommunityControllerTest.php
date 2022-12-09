@@ -71,7 +71,10 @@ class FrontendCommunityControllerTest extends TestCase
                     'posts.data.0.description',
                     'posts.data.0.username',
                     'posts.data.0.votes',
-                    'posts.data.0.postVotes'
+                    'posts.data.0.postVotes',
+                    'posts.data.0.community_slug',
+                    'posts.data.0.comments_count',
+
                 ])
             );
     }
@@ -114,6 +117,34 @@ class FrontendCommunityControllerTest extends TestCase
                     'posts.data.0.postVotes.0.user_id' => $user->id,
                     'posts.data.0.postVotes.0.vote' => $postVote->vote
                 ])
+                ->dump()
+            );
+    }
+
+    /** @test */
+    public function itShowsCommunityPostCommentsCountProperly()
+    {
+        $community = Community::factory()->create();
+        Post::factory()->for($community)->hasComments(4)->create();
+
+        $this->get('/r/' . $community->slug)
+            ->assertOk()
+            ->assertInertia(fn ($page) => $page
+                ->where('posts.data.0.comments_count', 4)
+                ->dump()
+            );
+    }
+
+    /** @test */
+    public function itShowsCommunitySlugInPostResourceProperly()
+    {
+        $community = Community::factory()->create();
+        Post::factory()->for($community)->create();
+
+        $this->get('/r/' . $community->slug)
+            ->assertOk()
+            ->assertInertia(fn ($page) => $page
+                ->where('posts.data.0.community_slug', $community->slug)
                 ->dump()
             );
     }
